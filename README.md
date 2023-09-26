@@ -1,4 +1,4 @@
-# ReCoup /L Unleashed
+# ReCoupler /L Unleashed
 
 A Mod for Kerbal Space Program that fixes the inability to recombine stacks.
 
