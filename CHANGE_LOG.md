@@ -1,5 +1,7 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2018-1222: 1.3.2 (DBooots) for KSP 1.6.1
+	+ Recompiled for KSP 1.6.
 * 2018-0326: 1.3.1 (DBooots) for KSP 1.4.4
 	+ Removed custom CLS plugin as the official one now supports the interfaces required for ReCoupler and CLS to work together.
 * 2017-0510: 1.3.0 (DBooots) for KSP 1.4.1
