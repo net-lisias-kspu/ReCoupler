@@ -1,5 +1,10 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2017-0328: 1.1.0 (DBooots) for KSP 1.2.2
+	+ 1.1.0:
+		- Fix virtual joints being forgotten on lower stages.
+		- Accommodate parts that change their mesh based on attach node status.
+		- Refactor a bunch of the in-editor code to accommodate this^. It's either much more or much less robust now. So we'll see.
 * 2017-0324: 1.0.0 (DBooots) for KSP 1.2.2
 	+ It's the grand release!
 	+ Improvements from the pre-release include:
