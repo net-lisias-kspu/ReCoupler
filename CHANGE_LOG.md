@@ -1,5 +1,15 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2017-0331: 1.2.1 (DBooots) for KSP 1.2.2
+	+ 1.2.1:
+		- Fix double-jointing of ReCoupler joints (a dev idea partially snuck through)
+	+ 1.2.0:
+			- Added support for Blizzy's Toolbar.
+			- Fixed crossfeed not showing up in the editor.
+			- Refactored to increase robustness and remove the need for a VesselModule.
+			- All identifying of ReCoupler joints is done in the editor, eliminating the possibility of unwanted joints generating in flight.
+			- All saving of ReCoupler joints is handled natively by KSP through sneaky trickery.
+			- Bug fixes and efficiency improvement.
 * 2017-0331: 1.2.0 (DBooots) for KSP 1.2.2
 	+ 1.2.0:
 		- Added support for Blizzy's Toolbar.
