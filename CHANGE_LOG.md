@@ -1,5 +1,8 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2022-0814: 1.3.6 (DBooots) for KSP 1.12.3
+	+ Allows ReCoupler paths to cross inline docking nodes if they're extended and active.
+	+ Thanks @taniwha for the pull request.
 * 2020-1230: 1.3.5 (DBooots) for KSP 1.11.0
 	+ Adds options to allow joints between parts separated by a robotic servo or KAS joint.
 	+ Changes GUI to use the PopupDialog system.
