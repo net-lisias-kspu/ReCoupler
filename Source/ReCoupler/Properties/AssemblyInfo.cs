@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ReCoupler")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A Mod for Kerbal Space Program that fixes the inability to recombine stacks.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ReCoupler")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany(ReCoupler.LegalMamboJambo.Company)]
+[assembly: AssemblyProduct(ReCoupler.LegalMamboJambo.Company)]
+[assembly: AssemblyCopyright(ReCoupler.LegalMamboJambo.Copyright)]
+[assembly: AssemblyTrademark(ReCoupler.LegalMamboJambo.Trademark)]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
