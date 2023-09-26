@@ -1,5 +1,8 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2019-0622: 1.3.3 (DBooots) for KSP 1.7.2
+	+ Recompiled for KSP 1.7.2.
+	+ Add compatibility for Breaking Ground Expansion robotics and joints (ReCoupler won't connect parts that have a joint between them).
 * 2019-0626: 1.3.3c (DBooots) for KSP 1.7.2
 	+ Removed extraneous file thumbs.db. Closing issue #11 from GitHub. No functional changes.
 * 2018-1222: 1.3.2 (DBooots) for KSP 1.6.1
