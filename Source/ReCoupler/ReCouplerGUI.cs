@@ -268,7 +268,7 @@ namespace ReCoupler
                 new MultiOptionDialog("ReCoupler", "", "ReCoupler", UISkinManager.defaultSkin, new Rect(ReCouplerWindow.x, ReCouplerWindow.y, 250, 150),
                     dialogToDisplay.ToArray()),
                 false, UISkinManager.defaultSkin, false);
-            dialog.OnDismiss += SaveWindowPosition;
+            //dialog.OnDismiss += SaveWindowPosition; // Not really necessary, see OnFalse above. (thanks kraken! Saved me troble on making this back compatible down to 1.4.0
             return dialog;
         }
 
