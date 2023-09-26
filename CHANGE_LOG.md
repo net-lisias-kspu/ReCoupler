@@ -1,5 +1,12 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2017-0324: 1.0.0 (DBooots) for KSP 1.2.2
+	+ It's the grand release!
+	+ Improvements from the pre-release include:
+		- Bug fixes (always bug fixes)
+		- A GUI for determining which parts have been joined and removing the virtual links between parts if desired
+		- Adjustable settings for the range and node angles that are accepted
+		- ConnectedLivingSpace Compatibility (requires custom CLS .dll (included) pending merging of pull request and update)
 * 2017-0313: 0.7.4 (DBooots) for KSP 1.2.2 PRE-RELEASE
 	+ 0.7.4:
 		- Fix interstage nodes accidentally connecting.
