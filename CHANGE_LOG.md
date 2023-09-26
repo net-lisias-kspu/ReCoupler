@@ -1,5 +1,7 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2018-0326: 1.3.1 (DBooots) for KSP 1.4.4
+	+ Removed custom CLS plugin as the official one now supports the interfaces required for ReCoupler and CLS to work together.
 * 2017-0510: 1.3.0 (DBooots) for KSP 1.4.1
 	+ 1.3.0:
 		- Add support for Infernal Robotics (detect joints between potential ReCoupler part pairs and do not join them if they are going to be moving relative to each other)
