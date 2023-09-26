@@ -1,5 +1,8 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2020-1230: 1.3.5 (DBooots) for KSP 1.11.0
+	+ Adds options to allow joints between parts separated by a robotic servo or KAS joint.
+	+ Changes GUI to use the PopupDialog system.
 * 2020-0311: 1.3.4 (DBooots) for KSP 1.9.1
 	+ Update for new Unity version and .Net 4.6.1.
 * 2019-0622: 1.3.3 (DBooots) for KSP 1.7.2
