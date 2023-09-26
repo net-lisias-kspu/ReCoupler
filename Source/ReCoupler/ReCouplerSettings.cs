@@ -20,15 +20,17 @@
 	along with ReCoupler /L Unleashed. If not, see <https://www.gnu.org/licenses/>.
 
 */
+using H = KSPe.IO.Hierarchy<ReCoupler.Startup>;
 namespace ReCoupler
 {
     internal static class ReCouplerSettings
     {
+        public static readonly string configURL = H.GAMEDATA.Solve("ReCouplerSettings.cfg").Replace("GameData/", "").Replace("GameData\\", "");
+
         public const float connectRadius_default = 0.1f;
         public const float connectAngle_default = 91;
         public const bool allowRoboJoints_default = false;
         public const bool allowKASJoints_default = false;
-        public const string configURL = "ReCoupler/ReCouplerSettings/ReCouplerSettings";
 
         public static float connectRadius = connectRadius_default;
         public static float connectAngle = connectAngle_default;
@@ -49,7 +51,8 @@ namespace ReCoupler
             if (settingsLoaded)
                 return;
 
-            var cfgs = GameDatabase.Instance.GetConfigs("ReCouplerSettings");
+            Log.dbg("configURL = {0}", configURL);
+            UrlDir.UrlConfig[] cfgs = GameDatabase.Instance.GetConfigs("ReCouplerSettings");
             if (cfgs.Length > 0)
             {
                 for (int i = 0; i < cfgs.Length; i++)
@@ -86,7 +89,7 @@ namespace ReCoupler
                     {
                         loadedRadius = connectRadius;
                         loadedAngle = connectAngle;
-                        UnityEngine.Debug.LogWarning("ReCouplerSettings: Couldn't find the correct settings file. Using default values.");
+                        Log.warn("ReCouplerSettings: Couldn't find the correct settings file. Using default values.");
                     }
                 }
             }
@@ -94,7 +97,7 @@ namespace ReCoupler
             {
                 loadedRadius = connectRadius;
                 loadedAngle = connectAngle;
-                UnityEngine.Debug.LogWarning("ReCouplerSettings: Couldn't find the settings file. Using default values.");
+                Log.warn("ReCouplerSettings: Couldn't find the settings file. Using default values.");
             }
 
             settingsLoaded = true;

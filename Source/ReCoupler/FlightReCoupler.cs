@@ -34,8 +34,6 @@ namespace ReCoupler
     {
         public static FlightReCoupler Instance;
 
-        internal static Logger log = new Logger("ReCoupler: FlightReCoupler: ");
-
         public Dictionary<Vessel, ObservableCollection<FlightJointTracker>> trackedJoints = new Dictionary<Vessel, ObservableCollection<FlightJointTracker>>();
         public List<FlightJointTracker> AllJoints
         {
@@ -98,7 +96,7 @@ namespace ReCoupler
                 if (trackedJoints.ContainsKey(part.vessel))
                     trackedJoints[part.vessel].Remove(jointsWithPart[i]);
                 else
-                    log.error("The destroyed part's vessel was not in the dictionary.");
+                    Log.error("The destroyed part's vessel was not in the dictionary.");
             }
         }
 
@@ -122,7 +120,7 @@ namespace ReCoupler
         IEnumerator DelayedUpdate(int time)
         {
             yield return new WaitForFixedUpdate();
-            log.debug("Running DelayedUpdate: " + Planetarium.GetUniversalTime());
+            Log.dbg("Running DelayedUpdate: {0}", Planetarium.GetUniversalTime());
             List<Vessel> vessels = trackedJoints.Keys.ToList();
             for (int i = vessels.Count - 1; i >= 0; i--)
             {
@@ -135,14 +133,14 @@ namespace ReCoupler
 
                     if (jt.parts[0] == null || jt.parts[1] == null)
                     {
-                        log.debug("Removing a null joint.");
+                        Log.dbg("Removing a null joint.");
                         jt.Destroy();
                         trackedJoints[vessels[i]].Remove(jt);
                         continue;
                     }
                     if (!jt.LinkCreated)
                     {
-                        log.debug("A joint must have broken.");
+                        Log.dbg("A joint must have broken.");
                         jt.Destroy();
                         trackedJoints[vessels[i]].Remove(jt);
                         continue;
@@ -157,7 +155,7 @@ namespace ReCoupler
                             dockingNode.state != dockingNode.st_preattached.name)*/
                         if ((fromNode != null && fromNode.otherNode != toNode) && (toNode != null && toNode.otherNode != fromNode))
                         {
-                            log.debug("A joint must have undocked.");
+                            Log.dbg("A joint must have undocked.");
                             trackedJoints[vessels[i]].Remove(jt);
                             continue;
                         }
@@ -165,29 +163,29 @@ namespace ReCoupler
 
                     if (jt.parts[0].vessel != jt.parts[1].vessel)
                     {
-                        log.debug("Vessel tree split, but should be re-combined.");
-                        log.debug(jt.parts[0].name + " / " + jt.parts[1].name);
-                        log.debug(jt.parts[0].vessel + " / " + jt.parts[1].vessel);
+                        Log.dbg("Vessel tree split, but should be re-combined.");
+                        Log.dbg("{0} / {1}", jt.parts[0].name, jt.parts[1].name);
+                        Log.dbg("{0} / {1}", jt.parts[0].vessel, jt.parts[1].vessel);
                         // The vessel split at the official tree, but isn't split at this joint.
 
                         if (jt.Couple(ownerVessel: vessels[i]))
                         {
-                            log.debug("Removing joint since it is now a real, coupled joint.");
-                            log.debug("Parent0: " + jt.parts[0].parent.name + " Parent1: " + jt.parts[1].parent.name);
+                            Log.dbg("Removing joint since it is now a real, coupled joint.");
+                            Log.dbg("Parent0: {0} ;  Parent1: {1}", jt.parts[0].parent.name, jt.parts[1].parent.name);
                             trackedJoints[vessels[i]].Remove(jt);
                         }
                         else
-                            log.error("Could not couple parts!");
+                            Log.error("Could not couple parts!");
 
                         combinedAny = true;
                         continue;
                     }
                     else if (jt.parts[0].vessel != vessels[i] && jt.parts[1].vessel != vessels[i])
                     {
-                        log.debug("Removing joint between " + jt.parts[0].name + " and " + jt.parts[1].name + " because they are no longer part of this vessel.");
+                        Log.dbg("Removing joint between {0} and {1} because they are no longer part of this vessel.", jt.parts[0].name, jt.parts[1].name);
                         if (jt.parts[0].vessel == jt.parts[1].vessel)
                         {
-                            log.debug("Adding them to vessel " + jt.parts[0].vessel.vesselName + " instead.");
+                            Log.dbg("Adding them to vessel {0} instead.", jt.parts[0].vessel.vesselName);
                             if (!trackedJoints.ContainsKey(jt.parts[0].vessel))
                                 AddNewVesselToDict(jt.parts[0].vessel);
                             trackedJoints[jt.parts[0].vessel].Add(jt);
@@ -212,11 +210,11 @@ namespace ReCoupler
             delayedUpdates.Remove(time);
         }
 
-        private void OnVesselGoOffRails(Vessel vessel) { log.debug("onVesselGoOffRails: " + vessel.vesselName); CheckActiveVessels(); }
+        private void OnVesselGoOffRails(Vessel vessel) { Log.dbg("onVesselGoOffRails: {0}", vessel.vesselName); CheckActiveVessels(); }
 
         private void OnJointBreak(EventReport data)
         {
-            log.debug("onJointBreak: " + data.origin.name + " on " + data.origin.vessel.vesselName);
+            Log.dbg("onJointBreak: {0} on {1}", data.origin.name, data.origin.vessel.vesselName);
             Part brokenPart = data.origin;
             if (!trackedJoints.ContainsKey(brokenPart.vessel))
                 return;
@@ -241,7 +239,7 @@ namespace ReCoupler
         IEnumerator DelayedBreak(FlightJointTracker joint, Vessel owner)
         {
             yield return new WaitForFixedUpdate();
-            log.debug("Running DelayedBreak on " + owner.vesselName);
+            Log.dbg("Running DelayedBreak on {0}", owner.vesselName);
             if (!joint.LinkCreated)
             {
                 joint.Destroy();
@@ -261,7 +259,7 @@ namespace ReCoupler
             {
                 if (joints[j].Decouplers.Any(d => d.isDecoupled))
                 {
-                    log.debug("Decoupler " + joints[j].Decouplers.First(d => d.isDecoupled).part.name + " decoupled. Removing from joints list.");
+                    Log.dbg("Decoupler {0} decoupled. Removing from joints list.", joints[j].Decouplers.First(d => d.isDecoupled).part.name);
                     joints[j].Destroy();
                     this.StartCoroutine(DelayedDecouplerCheck(joints[j], vessel));
                     joints.RemoveAt(j);
@@ -288,7 +286,7 @@ namespace ReCoupler
                 DestroyImmediate(tempJoints[0]);
             if (tempJoints[1] != null)
                 DestroyImmediate(tempJoints[1]);
-            log.debug("Running DelayedDecouplerCheck on " + owner.vesselName);
+            Log.dbg("Running DelayedDecouplerCheck on {0}", owner.vesselName);
             joint.PostDecouplerCheck();
         }
 
@@ -310,19 +308,19 @@ namespace ReCoupler
                                 trackedJoints[trackedVessels[i]].RemoveAt(j);
                             }
                             else
-                                log.warning("The Vessel a JointTracker should belong to has not yet been added to the dictionary.");
+                                Log.warn("The Vessel a JointTracker should belong to has not yet been added to the dictionary.");
                         }
                     }
                     if (!activeVessels.Contains(trackedVessels[i]))
                     {
-                        log.debug("Vessel " + trackedVessels[i].name + " is no longer loaded. Removing it from the dictionary.");
+                        Log.dbg("Vessel {0} is no longer loaded. Removing it from the dictionary.", trackedVessels[i].name);
                         OnVesselDestroy(trackedVessels[i]);
                         continue;
                     }
                 }
                 catch (Exception ex)
                 {
-                    log.error(ex + " while checking loaded vessels.");
+                    Log.error(ex, "while checking loaded vessels.");
                 }
             }
             for (int i = activeVessels.Count - 1; i >= 0; i--)
@@ -335,7 +333,7 @@ namespace ReCoupler
 
         public void GenerateJoints(Vessel vessel)
         {
-            log.debug("generateJoints: " + vessel.vesselName);
+            Log.dbg("generateJoints: {0}", vessel.vesselName);
             if (!trackedJoints.ContainsKey(vessel))
                 AddNewVesselToDict(vessel);
             List<Part> vesselParts = vessel.parts;
@@ -391,7 +389,7 @@ namespace ReCoupler
         {
             if (!trackedJoints.ContainsKey(vessel))
             {
-                log.warning(vessel.name + " was not in the dictionary.");
+                Log.warn("{0} was not in the dictionary.", vessel.name);
                 return;
             }
             for (int i = trackedJoints[vessel].Count - 1; i >= 0; i--)
@@ -482,7 +480,7 @@ namespace ReCoupler
             public FlightJointTracker(ConfigurableJoint joint, AttachNode parentNode, AttachNode childNode, bool link = true, bool isTrackingDockingPorts = false) : base(parentNode, childNode)
             {
                 this.joint = joint;
-                log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name);
+                //log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name);
                 this.IsTrackingDockingPorts = isTrackingDockingPorts;
                 this.CheckParents();
                 if (link)
@@ -493,7 +491,7 @@ namespace ReCoupler
 
             public FlightJointTracker(AttachNode parentNode, AttachNode childNode, bool link = true, bool isTrackingDockingPorts = false) : base(parentNode, childNode)
             {
-                log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name + " ");
+                //log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name + " ");
                 this.IsTrackingDockingPorts = isTrackingDockingPorts;
                 this.CheckParents();
                 if (link)
@@ -504,7 +502,7 @@ namespace ReCoupler
 
             public FlightJointTracker(AbstractJointTracker parent, bool link = true, bool isTrackingDockingPorts = false) : base(parent.nodes[0], parent.nodes[1])
             {
-                log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name + " ");
+                //log = new Logger("ReCoupler: FlightJointTracker: " + parts[0].name + " and " + parts[1].name + " ");
                 this.IsTrackingDockingPorts = isTrackingDockingPorts;
                 this.CheckParents();
                 if (link)
@@ -530,7 +528,7 @@ namespace ReCoupler
             {
                 if (this.joint != null)
                 {
-                    log.warning("This link already has a joint object.");
+                    Log.warn("This link already has a joint object.");
                     return this.joint;
                 }
                 if (IsTrackingDockingPorts)
@@ -546,12 +544,12 @@ namespace ReCoupler
                     Part parentPart = this.parts[0];
                     Part childPart = this.parts[1];
 
-                    log.debug("Creating joint between " + parentPart.name + " and " + childPart.name + ".");
+                    Log.dbg("Creating joint between {0} and {1}.", parentPart.name, childPart.name);
 
                     if (parentPart.Rigidbody == null)
-                        log.error("parentPart body is null :o");
+                        Log.error("parentPart body is null :o");
                     if (childPart.Rigidbody == null)
-                        log.error("childPart body is null :o");
+                        Log.error("childPart body is null :o");
 
                     ConfigurableJoint newJoint;
 
@@ -625,7 +623,7 @@ namespace ReCoupler
                 }
                 catch (Exception ex)
                 {
-                    log.error("Could not create physical joint: " + ex);
+                    Log.error(ex, "Could not create physical joint");
                 }
                 this.SetNodes();
 
@@ -661,9 +659,9 @@ namespace ReCoupler
                     return;
                 oldCrossfeedSets.Add(parts[0].crossfeedPartSet);
                 oldCrossfeedSets.Add(parts[1].crossfeedPartSet);
-                log.debug("Part Xfeed: " + parts[0].fuelCrossFeed + " node: " + nodes[0].ResourceXFeed);
-                log.debug("Part Xfeed: " + parts[1].fuelCrossFeed + " node: " + nodes[1].ResourceXFeed);
-                log.debug("Combining Crossfeed Sets.");
+                Log.dbg("Part Xfeed: {0} node: {1}", nodes[0].ResourceXFeed, nodes[0].ResourceXFeed);
+                Log.dbg("Part Xfeed: {0} node: {1}", nodes[1].ResourceXFeed, nodes[1].ResourceXFeed);
+                Log.dbg("Combining Crossfeed Sets.");
                 CombineCrossfeedSets(this.parts[0], this.parts[1]);
             }
 
@@ -687,7 +685,7 @@ namespace ReCoupler
                     Part targetPart = owner == 0 ? parts[0] : parts[1];
                     Part couplePart = owner == 0 ? parts[1] : parts[0];
 
-                    log.debug("Coupling " + couplePart.name + " to " + targetPart.name + ".");
+                    Log.dbg("Coupling {0} to {1}.", couplePart.name, targetPart.name);
 
                     if (ownerVessel == FlightGlobals.ActiveVessel)
                     {
@@ -708,7 +706,7 @@ namespace ReCoupler
                 }
                 catch (Exception ex)
                 {
-                    log.error("Error in coupling: " + ex);
+                    Log.error(ex, "Error in coupling");
                     return false;
                 }
             }
@@ -718,7 +716,7 @@ namespace ReCoupler
                 if (IsTrackingDockingPorts)
                     return;
 
-                log.debug("Destroying a link.");
+                Log.dbg("Destroying a link.");
                 if (joint != null)
                     GameObject.Destroy(joint);
 
@@ -769,13 +767,13 @@ namespace ReCoupler
                     {
                         if (parts[i].vessel != parents[i].part.vessel && ParentStillValid(parents[i]))
                         {
-                            log.debug("Coupling part to parent.");
+                            Log.dbg("Coupling part to parent.");
                             ReCouplerUtils.CoupleParts(parts[i], parents[i].part, parents[i].nodeTo, parents[i].node);
                         }
                     }
                     catch (Exception ex)
                     {
-                        log.error("Error in PostDecouplerCheck: " + ex);
+                        Log.error(ex, "Error in PostDecouplerCheck");
                     }
                 }
             }

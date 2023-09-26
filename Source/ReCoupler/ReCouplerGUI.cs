@@ -55,25 +55,15 @@ namespace ReCoupler
         private bool _highlightWasOn = false;
         private bool selectActive = false;
         private bool inputLocked = false;
-        private const string iconPath = "ReCoupler/ReCoupler_Icon";
-        private const string iconPath_off = "ReCoupler/ReCoupler_Icon_off";
-        private const string iconPath_blizzy = "ReCoupler/ReCoupler_blizzy_Icon";
-        private const string iconPath_blizzy_off = "ReCoupler/ReCoupler_blizzy_Icon_off";
         private string connectRadius_string = ReCouplerSettings.connectRadius_default.ToString();
         private string connectAngle_string = ReCouplerSettings.connectAngle_default.ToString();
         private bool allowRoboJoints_bool = ReCouplerSettings.allowRoboJoints_default;
         private bool allowKASJoints_bool = ReCouplerSettings.allowKASJoints_default;
         protected Vector2 ReCouplerWindow = new Vector2(-1, -1);
         internal protected List<AbstractJointTracker> jointsInvolved = null;
-        public bool appLauncherEventSet = false;
         private List<Part> highlightedParts = new List<Part>();
 
-        private static ApplicationLauncherButton button = null;
-        internal static IButton blizzyToolbarButton = null;
-
         private PopupDialog dialog = null;
-
-        Logger log = new Logger("ReCouplerGui: ");
 
         public void Awake()
         {
@@ -81,60 +71,10 @@ namespace ReCoupler
                 Destroy(Instance);
             Instance = this;
 
-            if (!ActivateBlizzyToolBar())
-            {
-                //log.debug("Registering GameEvents.");
-                appLauncherEventSet = true;
-                GameEvents.onGUIApplicationLauncherReady.Add(OnGuiApplicationLauncherReady);
-            }
             InputLockManager.RemoveControlLock("ReCoupler_EditorLock");
         }
 
-        private void OnGuiApplicationLauncherReady()
-        {
-            button = ApplicationLauncher.Instance.AddModApplication(
-                OnTrue,
-                OnFalse,
-                null,
-                null,
-                null,
-                null,
-                ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.FLIGHT,
-                GameDatabase.Instance.GetTexture(iconPath, false));
-        }
-
-        internal bool ActivateBlizzyToolBar()
-        {
-            try
-            {
-                if (!ToolbarManager.ToolbarAvailable) return false;
-                if (HighLogic.LoadedScene != GameScenes.EDITOR && HighLogic.LoadedScene != GameScenes.FLIGHT) return true;
-                blizzyToolbarButton = ToolbarManager.Instance.add("ReCoupler", "ReCoupler");
-                blizzyToolbarButton.TexturePath = iconPath_blizzy;
-                blizzyToolbarButton.ToolTip = "ReCoupler";
-                blizzyToolbarButton.Visible = true;
-                blizzyToolbarButton.OnClick += (e) =>
-                {
-                    OnButtonToggle();
-                };
-                return true;
-            }
-            catch
-            {
-                // Blizzy Toolbar instantiation error.  ignore.
-                return false;
-            }
-        }
-
-        public void OnButtonToggle()
-        {
-            if (!GUIVisible)
-                OnTrue();
-            else
-                OnFalse();
-        }
-
-        public void OnTrue()
+        internal void OnTrue()
         {
             connectRadius_string = ReCouplerSettings.connectRadius.ToString();
             connectAngle_string = ReCouplerSettings.connectAngle.ToString();
@@ -149,26 +89,27 @@ namespace ReCoupler
 
             dialog = SpawnPopupDialog();
             dialog.RTrf.position = ReCouplerWindow;
-
-            if (button != null)
-                button.SetTexture(GameDatabase.Instance.GetTexture(iconPath_off, false));
-            if (blizzyToolbarButton != null)
-                blizzyToolbarButton.TexturePath = iconPath_blizzy_off;
         }
-        public void OnFalse()
+        internal void OnFalse()
         {
             _highlightOn = false;
             selectActive = false;
             GUIVisible = false;
-            SaveWindowPosition();
-            dialog.Dismiss();
-            Destroy(dialog);
+
+            // If the user switches Scenes with the window active, this will fail on the other scene as the user tries to open it.
+            //
+            // A proper solution would be monitoring the scene switching to do proper house keeping. The OnDismiss thingy I commented
+            // out on SpawnPopupDialog below (as it's not available on KSP 1.4.x series) probably would be handling this.
+            //
+            // But this hack did the job the same, so this is how we are going for now.
+            if (null != this.dialog)
+            {
+                SaveWindowPosition();
+                dialog.Dismiss();
+                Destroy(dialog);
+            }
             dialog = null;
             UnlockEditor();
-            if (button != null)
-                button.SetTexture(GameDatabase.Instance.GetTexture(iconPath, false));
-            if (blizzyToolbarButton != null)
-                blizzyToolbarButton.TexturePath = iconPath_blizzy;
         }
 
         public void Start()
@@ -178,30 +119,16 @@ namespace ReCoupler
             this.connectAngle_string = ReCouplerSettings.connectAngle.ToString();
             this.allowRoboJoints_bool = ReCouplerSettings.allowRoboJoints;
             this.allowKASJoints_bool = ReCouplerSettings.allowKASJoints;
-            if (!ReCouplerSettings.showGUI)
-            {
-                HighlightOn = false;
-                if (button != null)
-                {
-                    button.SetFalse(true);
-                    ApplicationLauncher.Instance.RemoveModApplication(button);
-                }
-                if(appLauncherEventSet)
-                    GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiApplicationLauncherReady);
-                if (blizzyToolbarButton != null)
-                    blizzyToolbarButton.Destroy();
-            }
+
+            if (ReCouplerSettings.showGUI)
+                GUI.ToolbarController.Instance.Create(this);
+            HighlightOn = false;
         }
 
         public void OnDestroy()
         {
             //log.debug("Unregistering GameEvents.");
-            if (appLauncherEventSet)
-                GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiApplicationLauncherReady);
-            if (button != null)
-                ApplicationLauncher.Instance.RemoveModApplication(button);
-            if (blizzyToolbarButton != null)
-                blizzyToolbarButton.Destroy();
+            GUI.ToolbarController.Instance.Destroy();
             UnlockEditor();
         }
 
@@ -252,10 +179,7 @@ namespace ReCoupler
                 }, false),
                 new DialogGUIButton("Close", () =>
                 {
-                    if (button != null)
-                        button.SetFalse(true);
-                    else
-                        OnFalse();
+                    GUI.ToolbarController.Instance.CloseApplication();
                 })
             };
 
@@ -316,13 +240,13 @@ namespace ReCoupler
                     else
                     {
                         jointsInvolved = null;
-                        log.debug("ActiveVessel is not in the dictionary!");
+                        Log.dbg("ActiveVessel is not in the dictionary!");
                     }
                 }
                 else
                 {
                     jointsInvolved = null;
-                    log.error("Could not get active joints!");
+                    Log.dbg("Could not get active joints!");
                     return;
                 }
             }
@@ -363,11 +287,11 @@ namespace ReCoupler
 
                         if (hitPart != null)
                         {
-                            log.debug("Raycast hit part " + hitPart.name);
+                            Log.dbg("Raycast hit part {0}", hitPart.name);
                             List<AbstractJointTracker> hitJoints = jointsInvolved.FindAll(j => j.parts.Contains(hitPart));
                             for (int i = hitJoints.Count - 1; i >= 0; i--)
                             {
-                                log.debug("Destroying link between " + hitJoints[i].parts[0].name + " and " + hitJoints[i].parts[1].name);
+                                Log.dbg("Destroying link between {0} and {1}", hitJoints[i].parts[0].name, hitJoints[i].parts[1].name);
                                 hitJoints[i].Destroy();
                                 partPairsToIgnore.Add(hitJoints[i].parts.ToArray());
                                 if (HighLogic.LoadedSceneIsEditor && EditorReCoupler.Instance != null)
@@ -386,7 +310,7 @@ namespace ReCoupler
                             selectActive = false;
                         }
                         else
-                            log.debug("Hit part was null: ");
+                            Log.dbg("Hit part was null: ");
                     }
                 }
             }
@@ -401,7 +325,7 @@ namespace ReCoupler
             inputLocked = true;
             //EditorLogic.fetch.Lock(false, false, false, "ReCoupler_EditorLock");
             InputLockManager.SetControlLock(ControlTypes.EDITOR_SOFT_LOCK, "ReCoupler_EditorLock");
-            log.debug("Locking editor");
+            Log.dbg("Locking editor");
         }
 
         private void UnlockEditor()
@@ -411,12 +335,12 @@ namespace ReCoupler
             //EditorLogic.fetch.Unlock("ReCoupler_EditorLock");
             InputLockManager.RemoveControlLock("ReCoupler_EditorLock");
             inputLocked = false;
-            log.debug("Unlocking editor");
+            Log.dbg("Unlocking editor");
         }
 
         public Part SelectPartUnderMouse()
         {
-            log.debug("Using failsafe part select method.");
+            Log.dbg("Using failsafe part select method.");
             FlightCamera CamTest = new FlightCamera();
             CamTest = FlightCamera.fetch;
             Ray ray = CamTest.mainCamera.ScreenPointToRay(Input.mousePosition);

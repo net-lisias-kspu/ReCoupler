@@ -32,7 +32,7 @@ namespace ReCoupler
     {
         public void Awake()
         {
-            Debug.Log("ReCoupler: Registering custom events.");
+            Log.dbg("ReCoupler: Registering custom events.");
             ReCouplerUtils.onReCouplerJointFormed = new EventData<GameEvents.HostedFromToAction<Vessel, Part>>("onReCouplerJointFormed");
             ReCouplerUtils.onReCouplerJointBroken = new EventData<GameEvents.HostedFromToAction<Vessel, Part>>("onReCouplerJointBroken");
             ReCouplerUtils.onReCouplerEditorJointFormed = new EventData<GameEvents.FromToAction<Part, Part>>("onReCouplerEditorJointFormed");
@@ -46,8 +46,6 @@ namespace ReCoupler
         public static EventData<GameEvents.HostedFromToAction<Vessel, Part>> onReCouplerJointBroken;
         public static EventData<GameEvents.FromToAction<Part, Part>> onReCouplerEditorJointFormed;
         public static EventData<GameEvents.FromToAction<Part, Part>> onReCouplerEditorJointBroken;
-
-        static Logger log = new Logger("ReCoupler: ReCouplerUtils: ");
 
         public enum JointType
         {
@@ -214,7 +212,7 @@ namespace ReCoupler
                 // Dealing with fairing interstage nodes:
                 if (part.attachNodes[i].id.StartsWith("interstage"))
                 {
-                    log.debug("Skipping interstage node: " + part.attachNodes[i].id + " on part " + part.name);
+                    Log.dbg("Skipping interstage node: {0} on part {1}.",  part.attachNodes[i].id, part.name);
                     continue;
                 }
 
@@ -236,7 +234,7 @@ namespace ReCoupler
                     {
                         if (dockingNode.referenceNode == null)
                         {
-                            log.error("Docking node has null referenceNode! " + part.name);
+                            Log.error("Docking node has null referenceNode! {0}", part.name);
                             continue;
                         }
                         if (dockingNode.referenceNode == part.attachNodes[i])
@@ -320,7 +318,7 @@ namespace ReCoupler
                     if (TreeHasKinks(checkNodes[j].owner, node.owner, allowRoboJoints, allowKASJoints))
                         continue;
 
-                    log.debug(node.owner.name + "/" + checkNodes[j].owner.name + ": " + dist + "m, at " + angleBtwn + " deg.");
+                    Log.dbg("{0}/{1}: {2}m, at {3} deg.", node.owner.name, checkNodes[j].owner.name, dist, angleBtwn);
                     closestNode = checkNodes[j];
                 }
             }
@@ -362,7 +360,7 @@ namespace ReCoupler
                 {
                     if (PartIsInvalidForPath(partsToCheck[i], allowRoboJoints, allowKASJoints))
                     {
-                        log.debug("Part: " + partsToCheck[i].name + " had an ineligible module.");
+                        Log.dbg("Part: {0} had an ineligible module.", partsToCheck[i].name);
                         return true;
                     }
                 }
@@ -371,7 +369,7 @@ namespace ReCoupler
             }
             catch (Exception ex)
             {
-                log.error("Encountered " + ex);
+                Log.error(ex, typeof(ReCouplerUtils).GetType());
                 return true;
             }
         }
@@ -384,7 +382,7 @@ namespace ReCoupler
             partsBetween = 0;
             if (rootPart1 != rootPart2)
             {
-                log.error("Parts are not part of the same tree.");
+                Log.error("Parts are not part of the same tree.");
                 return null;
             }
 
@@ -505,7 +503,7 @@ namespace ReCoupler
                 if (targetNode != null)
                     targetNode.attachedPart = srcPart;
                 else
-                    log.warning("Target node is null.");
+                    Log.warn("Target node is null.");
             }
             else
             {
@@ -544,12 +542,12 @@ namespace ReCoupler
             Part tgtPart = dockingNode.referenceNode.attachedPart;
             if (tgtPart == null)
             {
-                log.error("Node's part " + dockingNode.part.name + " is not attached to anything thru the reference node");
+                Log.error("Node's part {0} is not attached to anything thru the reference node", dockingNode.part.name);
                 return false;
             }
             if (dockingNode.state != dockingNode.st_ready.name)
             {
-                log.debug("Hard reset docking node " + dockingNode.part.name + " from state " + dockingNode.state + " to " + dockingNode.st_ready.name);
+                Log.dbg("Hard reset docking node {0} from state {1} to {2}.", dockingNode.part.name, dockingNode.state, dockingNode.st_ready.name);
                 dockingNode.dockedPartUId = 0;
                 dockingNode.dockingNodeModuleIndex = 0;
                 // Target part lived in real world for some time, so its state may be anything.
@@ -564,10 +562,10 @@ namespace ReCoupler
             }
             if (dockingNode.fsm.currentStateName != dockingNode.st_preattached.name)
             {
-                log.warning("Node on " + dockingNode.part.name + " is unexpected state " + dockingNode.fsm.currentStateName);
+                Log.warn("Node on {0} is unexpected state {1}." + dockingNode.fsm.currentStateName, dockingNode.part.name, dockingNode.fsm.currentStateName);
                 return false;
             }
-            log.debug("Successfully set docking node " + dockingNode.part + " to state " + dockingNode.fsm.currentStateName + " with part " + tgtPart.name);
+            Log.dbg("Successfully set docking node {0} to state {1} with part {2}", dockingNode.part, dockingNode.fsm.currentStateName, tgtPart.name);
             return true;
         }
 

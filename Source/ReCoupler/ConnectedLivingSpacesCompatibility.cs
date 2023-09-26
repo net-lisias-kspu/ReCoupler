@@ -42,8 +42,6 @@ namespace ReCoupler
         private static MethodInfo requestRemoveConnectionsMethod = null;
         private static PropertyInfo InstanceProperty = null;
 
-        private static Logger log = new Logger("CLSCompatibility: ");
-
         public static bool IsCLSInstalled
         {
             get
@@ -57,7 +55,7 @@ namespace ReCoupler
                         assembly = (from a in assemblies
                                     where a.FullName.Contains(assemblyName)
                                     select a).SingleOrDefault();
-                        log.debug(assembly != null ? assembly.FullName : "ConnectedLivingSpace was not found.");
+                        Log.dbg(assembly != null ? assembly.FullName : "ConnectedLivingSpace was not found.");
                         if (assembly != null)
                         {
                             _isClsInstalled = true;
@@ -74,7 +72,7 @@ namespace ReCoupler
                             if (requestAddConnectionMethod == null || requestAddConnectionsMethod == null || requestRemoveConnectionMethod == null || requestRemoveConnectionsMethod == null || InstanceProperty == null)
                             {
                                 _isClsInstalled = false;
-                                log.debug("One of the required methods was not found. You may be using an outdated CLS version.");
+                                Log.warn("One of the required methods was not found. You may be using an outdated CLS version.");
                             }
                         }
                         else
@@ -82,7 +80,7 @@ namespace ReCoupler
                     }
                     catch
                     {
-                        log.error("Encountered an exception when detecting CLS installation.");
+                        Log.error("Encountered an exception when detecting CLS installation.");
                         _isClsInstalled = false;
                     }
                 }

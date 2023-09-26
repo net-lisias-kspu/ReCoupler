@@ -33,8 +33,6 @@ namespace ReCoupler
     {
         public static EditorReCoupler Instance;
 
-        Logger log = new Logger("ReCoupler: EditorReCoupler: ");
-        
         public List<AttachNode> openNodes = new List<AttachNode>();
         public List<EditorJointTracker> hiddenNodes = new List<EditorJointTracker>();
         
@@ -168,7 +166,7 @@ namespace ReCoupler
 
             if (ship == null)
             {
-                log.warning("ShipConstruct is null.");
+                Log.warn("ShipConstruct is null.");
                 return;
             }
 
