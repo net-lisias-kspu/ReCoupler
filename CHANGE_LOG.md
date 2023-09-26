@@ -1,5 +1,10 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2017-0510: 1.3.0 (DBooots) for KSP 1.4.1
+	+ 1.3.0:
+		- Add support for Infernal Robotics (detect joints between potential ReCoupler part pairs and do not join them if they are going to be moving relative to each other)
+		- Make user-ignored part pairs persistent.
+		- Make the icon much nicer - Credit to @Rodger!
 * 2017-0331: 1.2.1 (DBooots) for KSP 1.2.2
 	+ 1.2.1:
 		- Fix double-jointing of ReCoupler joints (a dev idea partially snuck through)
