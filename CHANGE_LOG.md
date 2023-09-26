@@ -1,5 +1,8 @@
 # ReCoupler /L Unleashed :: Change Log
 
+* 2017-0313: 0.7.4 (DBooots) for KSP 1.2.2 PRE-RELEASE
+	+ 0.7.4:
+		- Fix interstage nodes accidentally connecting.
 * 2017-0310: 0.7.3 (DBooots) for KSP 1.2.2 PRE-RELEASE
 	+ 0.7.3 hotfix:
 		- Fix CTD resulting from connecting two cargo bays in series.
