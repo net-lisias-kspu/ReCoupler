@@ -62,7 +62,7 @@ Detailed installation instructions are now on its own file (see the [In a Hurry]
 			- You don't mix your work with GPL incompatible works.
 	* If by some reason the GPL would be invalid for you, rest assured that you still retain the right to Use the Work under SKL 1.0. 
 
-Releases previous to 1.3.6.1 are still available under the [MIT/Expat](https://opensource.org/license/mit/) license [here](https://github.com/net-lisias-kspu/ReCoup/tree/Source/MIT). Please note this [statement](https://www.gnu.org/licenses/license-list.en.html#Expat) from FSF.
+Releases previous to 1.3.6.1 are still available under the [MIT/Expat](https://opensource.org/license/mit/) license [here](https://github.com/net-lisias-kspu/ReCoupler/tree/Source/MIT). Please note this [statement](https://www.gnu.org/licenses/license-list.en.html#Expat) from FSF.
 
 Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 
