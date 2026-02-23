@@ -8,6 +8,8 @@
 		- Log
 		- UI
 		- File System  
+* 2024-0915: 1.3.6 (DBooots) for KSP 1.12.3
+	+ Fixes a Unity warning about the OnJointBreak method.
 * 2022-0814: 1.3.6 (DBooots) for KSP 1.12.3
 	+ Allows ReCoupler paths to cross inline docking nodes if they're extended and active.
 	+ Thanks @taniwha for the pull request.
